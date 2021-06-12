@@ -4,18 +4,20 @@ import time
 start_time = time.time()
 
 
-def creator(q, n):
-    for item in range(n):
+def creator(q, n, start, step):
+    for item in range(start, n, step):
         q.put(item)
 
 
 def consumer(q, n):
     plus = 0
+    k = 0
     while True:
         if q.empty() is False:
             a = q.get()
             plus += a
-            if a == n - 1:
+            k += 1
+            if k == n:
                 break
     print(plus)
 
@@ -23,16 +25,20 @@ def consumer(q, n):
 if __name__ == '__main__':
     q = Queue()
     n = 10000
-    process_one = Process(target=creator, args=(q, n))
-    process_two = Process(target=consumer, args=(q, n))
-
-    process_one.start()
-    process_two.start()
+    k = 10  # number of processes
+    l = []
+    for i in range(k):
+        l.append(Process(target=creator, args=(q, n, i, k)))
+    last = Process(target=consumer, args=(q, n))
+    for p in l:
+        p.start()
+    last.start()
 
     q.close()
     q.join_thread()
 
-    process_one.join()
-    process_two.join()
+    for p in l:
+        p.join()
+    last.join()
 
     print(time.time() - start_time)
