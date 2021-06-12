@@ -22,7 +22,7 @@ def consumer(q, n):
 
 if __name__ == '__main__':
     q = Queue()
-    n = 10
+    n = 10000
     process_one = Process(target=creator, args=(q, n))
     process_two = Process(target=consumer, args=(q, n))
 
