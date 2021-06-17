@@ -1,41 +1,45 @@
-from multiprocessing import Process, Queue, Manager
 import time
+from multiprocessing import Process, Queue, Manager
 
 start_time = time.time()
 
 
-def creator(q, n, start, step):
-    for item in range(start, n, step):
+def creator(q, n, k):
+    for item in range(n):
         q.put(item)
+    for item in range(k):
+        q.put(-1)
 
 
-def consumer(q, n):
+def consumer(q, q1):
     plus = 0
-    k = 0
     while True:
         if q.empty() is False:
             a = q.get()
-            plus += a
-            k += 1
-            if k == n:
+            if a == -1:
                 break
-    print(plus)
+            plus += a
+    q1.put(plus)
 
 
 if __name__ == '__main__':
     q = Manager().Queue()
+    q1 = Queue()
     n = 10000
-    k = 10  # number of processes
+    k = 10
     l = []
+    last = Process(target=creator, args=(q, n, k))
     for i in range(k):
-        l.append(Process(target=creator, args=(q, n, i, k)))
-    last = Process(target=consumer, args=(q, n))
+        l.append(Process(target=consumer, args=(q, q1)))
+    last.start()
     for p in l:
         p.start()
-    last.start()
 
+    last.join()
     for p in l:
         p.join()
-    last.join()
-
+    sm = 0
+    for i in range(k):
+        sm += q1.get()
+    print(sm)
     print(time.time() - start_time)
