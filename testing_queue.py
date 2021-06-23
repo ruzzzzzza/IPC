@@ -26,7 +26,7 @@ def consumer(q, k):
 
 if __name__ == '__main__':
     q = Queue()
-    l = 200  # the size of the string in bytes
+    l = 5 * 1024  # the size of the string in bytes
     n = 1000000  # number of lines
     k = 10  # number of processes
     kk = []
