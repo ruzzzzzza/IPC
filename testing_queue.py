@@ -23,7 +23,7 @@ def consumer(q):
 
 if __name__ == '__main__':
     q = Queue()
-    l = 5 * 1024  # the size of the string in bytes
+    l = 100 * 1024  # the size of the string in bytes
     n = 1000000  # number of lines
     process_one = Process(target=creator, args=(q, n, l))
     process_two = Process(target=consumer, args=(q,))
